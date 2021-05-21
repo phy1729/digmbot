@@ -2,10 +2,6 @@
 #
 # returns url corresponding to requested vim ":help"
 
-BEGIN {
-	tmpfile = "/dev/shm/.vimhelpout"
-}
-
 function percentencode(str) {
 	# have to encode "%" first
 	gsub("%", "%25", str)
@@ -31,36 +27,29 @@ function escapeshell(key) {
 }
 
 function getpage(key) {
-	# remove any previous runs
-	system("rm "tmpfile" 2>/dev/null")
 	# get the relevant :help page and tag from vim
-	getline page < tmpfile
-	system("echo 'e "tmpfile" |" \
+	"echo 'e /dev/stdout |" \
 		"execute \":help "key"\" |" \
 		"let @f = expand(\"%:t\") |" \
 		"q |" \
 		"execute \"normal i\\<c-r>f\\<esc>\" |" \
 		"wqa!' |" \
-		"vim -u NONE -e +'set nocp' +'ru plugin/gzip.vim'")
-	getline page < tmpfile
-	close(tmpfile)
+		"vim -u NONE -e +'set nocp' +'ru plugin/gzip.vim'" \
+	| getline page
 	gsub(".gz$", "", page)
 	return page
 }
 
 function gettag(key) {
-	# remove any previous runs
-	system("rm "tmpfile" 2>/dev/null")
 	# get the relevant :help page and tag from vim
-	system("echo 'e "tmpfile" |" \
+	"echo 'e /dev/stdout |" \
 		"execute \":help "key"\" |" \
 		"execute \":normal l\\\"tyt*\" |" \
 		"q |" \
 		"execute \"normal i\\<c-r>t\\<esc>\" |" \
 		"wqa!' |" \
-		"vim -u NONE -e +'set nocp' +'ru plugin/gzip.vim'")
-	getline tag < tmpfile
-	close(tmpfile)
+		"vim -u NONE -e +'set nocp' +'ru plugin/gzip.vim'" \
+	| getline tag
 	return tag
 }
 
