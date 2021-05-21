@@ -41,9 +41,10 @@ function getpage(key) {
 		"q |" \
 		"execute \"normal i\\<c-r>f\\<esc>\" |" \
 		"wqa!' |" \
-		"vim -u NONE -e")
+		"vim -u NONE -e +'set nocp' +'ru plugin/gzip.vim'")
 	getline page < tmpfile
 	close(tmpfile)
+	gsub(".gz$", "", page)
 	return page
 }
 
@@ -57,7 +58,7 @@ function gettag(key) {
 		"q |" \
 		"execute \"normal i\\<c-r>t\\<esc>\" |" \
 		"wqa!' |" \
-		"vim -u NONE -e")
+		"vim -u NONE -e +'set nocp' +'ru plugin/gzip.vim'")
 	getline tag < tmpfile
 	close(tmpfile)
 	return tag
